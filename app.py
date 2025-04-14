@@ -338,8 +338,7 @@ else:
     
     # Display example visualization
     with st.expander("Example Visualization"):
-        st.image("https://miro.medium.com/max/700/1*lxLYuE4i8KgMk50rk_q9Qw.png", 
-                 caption="Example of flight scheduling on multiple runways")
+        st.write("Exemplo de visualização de escalonamento de voos em múltiplas pistas será mostrado aqui após o carregamento dos dados.")
 
 # Footer
 st.markdown("---")
