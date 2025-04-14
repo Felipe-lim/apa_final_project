@@ -8,7 +8,8 @@ def plot_runway_schedule(solution: List[List[int]],
                          release_times: List[int], 
                          processing_times: List[int], 
                          penalties: List[int],
-                         num_runways: int) -> plt.Figure:
+                         num_runways: int,
+                         waiting_times: List[List[int]] = None) -> plt.Figure:
     """
     Plot a visualization of flight scheduling on runways.
     
@@ -35,9 +36,12 @@ def plot_runway_schedule(solution: List[List[int]],
             if prev_flight is None:
                 start_time = max(current_time, release_times[flight])
             else:
-                # We don't have waiting times here, but we should account for them in real implementation
-                # For now, just use the release time
-                start_time = max(current_time, release_times[flight])
+                # Add waiting time from previous flight to current flight
+                if waiting_times is not None:
+                    min_start_time = current_time + waiting_times[prev_flight][flight]
+                    start_time = max(min_start_time, release_times[flight])
+                else:
+                    start_time = max(current_time, release_times[flight])
             
             # Calculate end time
             end_time = start_time + processing_times[flight]

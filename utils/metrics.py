@@ -2,37 +2,54 @@ from typing import List, Dict, Any
 
 def calculate_solution_value(solution: List[List[int]], 
                             release_times: List[int], 
-                            penalties: List[int]) -> float:
+                            processing_times: List[int] | None = None,
+                            waiting_times: List[List[int]] | None = None,
+                            penalties: List[int] | None = None) -> float:
     """
     Calculate the total penalty value of a solution.
     
     Args:
         solution: Assignment of flights to runways
         release_times: Release times for all flights
+        processing_times: Processing times for all flights (optional)
+        waiting_times: Matrix of required waiting times between consecutive flights (optional)
         penalties: Penalty per unit time for each flight
         
     Returns:
         Total penalty value
     """
-    # In a real implementation, we'd calculate this properly
-    # For now, this is a simplified version that doesn't account for waiting times
-    
     total_penalty = 0
     
     for runway in solution:
         current_time = 0
+        prev_flight = None
         
         for flight in runway:
-            # Calculate start time (simplified)
-            start_time = max(current_time, release_times[flight])
+            # Calculate start time
+            if prev_flight is None:
+                # First flight on runway
+                start_time = max(current_time, release_times[flight])
+            else:
+                # Consider waiting time between flights if available
+                if waiting_times is not None:
+                    wait_time = waiting_times[prev_flight][flight]
+                    earliest_possible_time = current_time + wait_time
+                    start_time = max(earliest_possible_time, release_times[flight])
+                else:
+                    start_time = max(current_time, release_times[flight])
             
             # Calculate delay and penalty
             delay = max(0, start_time - release_times[flight])
-            flight_penalty = delay * penalties[flight]
-            total_penalty += flight_penalty
+            if penalties is not None:
+                flight_penalty = delay * penalties[flight]
+                total_penalty += flight_penalty
             
-            # Update current time (simplified)
-            current_time = start_time + 1  # Just a placeholder
+            # Update current time and previous flight
+            if processing_times is not None:
+                current_time = start_time + processing_times[flight]
+            else:
+                current_time = start_time + 1  # Fallback if processing_times not provided
+            prev_flight = flight
     
     return total_penalty
 

@@ -118,7 +118,7 @@ if uploaded_file is not None:
                     initial_solution = combined_heuristic(release_times, processing_times, waiting_times, penalties, num_runways)
                 
                 constructive_time = time.time() - start_time
-                constructive_value = calculate_solution_value(initial_solution, release_times, penalties)
+                constructive_value = calculate_solution_value(initial_solution, release_times, processing_times, waiting_times, penalties)
                 constructive_results.append(constructive_value)
                 constructive_times.append(constructive_time)
                 
@@ -146,7 +146,7 @@ if uploaded_file is not None:
                     )
                     
                     vnd_time = time.time() - start_time
-                    vnd_value = calculate_solution_value(improved_solution, release_times, penalties)
+                    vnd_value = calculate_solution_value(improved_solution, release_times, processing_times, waiting_times, penalties)
                     vnd_results.append(vnd_value)
                     vnd_times.append(vnd_time)
                 
@@ -184,7 +184,7 @@ if uploaded_file is not None:
                     best_constructive = combined_heuristic(release_times, processing_times, waiting_times, penalties, num_runways)
                 
                 st.write("Best Constructive Solution:")
-                fig = plot_runway_schedule(best_constructive, release_times, processing_times, penalties, num_runways)
+                fig = plot_runway_schedule(best_constructive, release_times, processing_times, penalties, num_runways, waiting_times)
                 st.pyplot(fig)
             
             if use_vnd:
