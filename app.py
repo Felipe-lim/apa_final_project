@@ -23,17 +23,17 @@ st.set_page_config(
 )
 
 # Title and description
-st.title("✈️ Airport Runway Scheduling Optimizer")
+st.title("✈️ Otimizador de Agendamento de Pistas de Aeroporto")
 st.markdown("""
-This application helps optimize the scheduling of takeoffs and landings at an airport with multiple runways.
-The goal is to minimize delay penalties while respecting safety constraints between consecutive flights.
+Esta aplicação ajuda a otimizar o agendamento de pousos e decolagens em um aeroporto com múltiplas pistas.
+O objetivo é minimizar as penalidades por atraso, respeitando as restrições de segurança entre voos consecutivos.
 """)
 
 # Sidebar for configuration
-st.sidebar.header("Configuration")
+st.sidebar.header("Configuração")
 
 # File upload
-uploaded_file = st.sidebar.file_uploader("Upload instance file", type=["txt"])
+uploaded_file = st.sidebar.file_uploader("Carregar arquivo de instância", type=["txt"])
 
 # Only proceed if a file is uploaded
 if uploaded_file is not None:
@@ -41,44 +41,44 @@ if uploaded_file is not None:
     try:
         num_flights, num_runways, release_times, processing_times, penalties, waiting_times = parse_input_file(uploaded_file)
         
-        st.sidebar.success(f"Loaded instance with {num_flights} flights and {num_runways} runways")
+        st.sidebar.success(f"Instância carregada com {num_flights} voos e {num_runways} pistas")
         
         # Display instance details in expandable section
-        with st.expander("Instance Details"):
+        with st.expander("Detalhes da Instância"):
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("Flights")
+                st.subheader("Voos")
                 flight_data = pd.DataFrame({
-                    "Flight": [f"Flight {i+1}" for i in range(num_flights)],
-                    "Release Time": release_times,
-                    "Processing Time": processing_times,
-                    "Penalty per Unit Delay": penalties
+                    "Voo": [f"Voo {i+1}" for i in range(num_flights)],
+                    "Tempo de Liberação": release_times,
+                    "Tempo de Processamento": processing_times,
+                    "Penalidade por Unidade de Atraso": penalties
                 })
                 st.dataframe(flight_data)
             
             with col2:
-                st.subheader("Waiting Times Matrix")
+                st.subheader("Matriz de Tempos de Espera")
                 waiting_df = pd.DataFrame(waiting_times)
-                waiting_df.index = [f"Flight {i+1}" for i in range(num_flights)]
-                waiting_df.columns = [f"Flight {i+1}" for i in range(num_flights)]
+                waiting_df.index = [f"Voo {i+1}" for i in range(num_flights)]
+                waiting_df.columns = [f"Voo {i+1}" for i in range(num_flights)]
                 st.dataframe(waiting_df)
         
         # Algorithm selection
-        st.sidebar.header("Algorithm Selection")
+        st.sidebar.header("Seleção de Algoritmos")
         constructive_algorithm = st.sidebar.selectbox(
-            "Constructive Algorithm",
+            "Algoritmo Construtivo",
             ["Earliest Ready Time", "Least Penalty", "Combined Heuristic"]
         )
         
-        use_vnd = st.sidebar.checkbox("Apply VND (Variable Neighborhood Descent)", value=True)
+        use_vnd = st.sidebar.checkbox("Aplicar VND (Variable Neighborhood Descent)", value=True)
         
         # VND configuration if selected
         if use_vnd:
-            st.sidebar.subheader("VND Configuration")
-            max_iterations = st.sidebar.slider("Max Iterations", 10, 1000, 100)
+            st.sidebar.subheader("Configuração do VND")
+            max_iterations = st.sidebar.slider("Número Máximo de Iterações", 10, 1000, 100)
             neighborhood_order = st.sidebar.multiselect(
-                "Neighborhood Order",
+                "Ordem das Vizinhanças",
                 ["Swap Flights", "Move Flight", "Swap Between Runways"],
                 ["Swap Flights", "Move Flight", "Swap Between Runways"]
             )
