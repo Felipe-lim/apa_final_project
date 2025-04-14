@@ -229,7 +229,7 @@ if uploaded_file is not None:
                     )
                     
                     st.write("Best VND Solution:")
-                    fig = plot_runway_schedule(best_vnd, release_times, processing_times, penalties, num_runways)
+                    fig = plot_runway_schedule(best_vnd, release_times, processing_times, penalties, num_runways, waiting_times)
                     st.pyplot(fig)
             
             # Comparative analysis
