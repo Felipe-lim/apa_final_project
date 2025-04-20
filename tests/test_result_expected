@@ -1,0 +1,50 @@
+Título:
+Valores de referência para as instâncias de teste [Atualizado dia 16/04]
+Conteúdo:
+A seguir seguem alguns valores de referência para o cálculo do GAP. Note que alguns destes valores são somente limites inferiores (LBs).
+
+n3m10A    7483 (opt)
+n3m10B    1277 (opt)
+n3m10C    2088 (opt)
+n3m10D    322 (opt)
+n3m10E    3343 (opt)
+n3m20A    8280 (LB)
+n3m20B    1820 (LB)
+n3m20C    855 (LB)
+n3m20D    4357 (opt)
+n3m20E    3798 (opt)
+n3m40A    112 (LB)
+n3m40B    880 (LB)
+n3m40C    1962 (LB)
+n3m40D    263 (LB)
+n3m40E    1192 (LB)
+n5m50A    0 (LB)
+n5m50B    0 (LB)
+n5m50C    0 (LB)
+n5m50D    0 (LB)
+n5m50E    0 (LB)
+
+
+
+
+VitorTiltado — 07/04/2025, 10:50
+Título:
+Valores de referência para as instâncias de teste
+Conteúdo:
+A seguir seguem alguns valores de referência para o cálculo do GAP. Note que alguns destes valores são somente limites inferiores (LBs).
+
+n3m10A: 7483 (opt)
+n3m10B: 1277 (opt)
+n3m10C: 2088 (opt)
+n3m10D: 322 (opt)
+n3m10E: 3343 (opt)
+n3m20A: 3129 (LB)
+n3m20B: 1258 (LB)
+n3m20C: 855 (LB)
+n3m20D: 4357 (opt)
+n3m20E: 3798 (opt)
+
+Obs: Em breve atualizarei a lista para incluir as outras instâncias.
+
+Data cadastro:
+06/04/2025
