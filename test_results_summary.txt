@@ -1,0 +1,62 @@
+
+==== Results Summary by Instance ====
+               Gap (%)  Execution Time (s)
+Instance                                  
+n3m10A    0.000000e+00            0.000014
+n3m20D    0.000000e+00            0.000022
+n3m10E    0.000000e+00            0.000011
+n3m20E    0.000000e+00            0.000018
+n3m10C    0.000000e+00            0.000012
+n3m10B    0.000000e+00            0.000012
+n3m10D    0.000000e+00            0.000011
+n3m20C    7.169591e+02            0.000019
+n3m20A    9.021413e+02            0.000022
+n3m20B    1.250715e+03            0.000018
+n3m40E    1.442450e+03            0.000043
+n3m40C    2.420031e+03            0.000032
+n3m40B    3.601705e+03            0.000044
+n3m40D    5.322053e+03            0.000042
+n3m40A    4.606339e+04            0.000035
+n5m50D             inf            0.000055
+n5m50A             inf            0.000068
+n5m50B             inf            0.000063
+n5m50C             inf            0.000070
+n5m50E             inf            0.000057
+
+==== Results Summary by Algorithm ====
+                                             Gap (%)  Execution Time (s)  Solution Value
+Algorithm                                                                               
+Combined Heuristic                               inf            0.000156        87330.45
+Combined Heuristic + First Improvement VND       inf            5.092302        21534.20
+Combined Heuristic + Shake + VND                 inf            8.423514        35416.80
+Combined Heuristic + VND                         inf            0.093583        33620.20
+Earliest Ready Time                              inf            0.000033        68297.45
+Earliest Ready Time + First Improvement VND      inf            6.608069        21015.85
+Earliest Ready Time + Shake + VND                inf           10.455266        33580.50
+Earliest Ready Time + VND                        inf            0.098073        31232.45
+Least Penalty                                    inf            0.000053       239170.95
+Least Penalty + First Improvement VND            inf            3.666001        22056.80
+Least Penalty + Shake + VND                      inf            7.474415        34790.70
+Least Penalty + VND                              inf            0.096140        31238.85
+
+==== Best Algorithm for Each Instance ====
+n3m10A: Earliest Ready Time + First Improvement VND - Value: 7483 - Gap: 0.0%
+n3m10B: Earliest Ready Time + VND - Value: 1277 - Gap: 0.0%
+n3m10C: Earliest Ready Time + VND - Value: 2088 - Gap: 0.0%
+n3m10D: Earliest Ready Time + VND - Value: 322 - Gap: 0.0%
+n3m10E: Earliest Ready Time + VND - Value: 3343 - Gap: 0.0%
+n3m20A: Least Penalty + First Improvement VND - Value: 31357 - Gap: 902.141259188239%
+n3m20B: Combined Heuristic + First Improvement VND - Value: 16992 - Gap: 1250.7154213036565%
+n3m20C: Combined Heuristic + First Improvement VND - Value: 6985 - Gap: 716.9590643274854%
+n3m20D: Least Penalty + First Improvement VND - Value: 4357 - Gap: 0.0%
+n3m20E: Least Penalty + First Improvement VND - Value: 3798 - Gap: 0.0%
+n3m40A: Combined Heuristic + First Improvement VND - Value: 51703 - Gap: 46063.392857142855%
+n3m40B: Earliest Ready Time + First Improvement VND - Value: 32575 - Gap: 3601.7045454545455%
+n3m40C: Earliest Ready Time + Shake + VND - Value: 49443 - Gap: 2420.0305810397554%
+n3m40D: Combined Heuristic + First Improvement VND - Value: 14260 - Gap: 5322.053231939164%
+n3m40E: Combined Heuristic + Shake + VND - Value: 18386 - Gap: 1442.4496644295302%
+n5m50A: Earliest Ready Time + First Improvement VND - Value: 71870 - Gap: inf%
+n5m50B: Combined Heuristic + First Improvement VND - Value: 31952 - Gap: inf%
+n5m50C: Combined Heuristic + Shake + VND - Value: 19775 - Gap: inf%
+n5m50D: Earliest Ready Time + Shake + VND - Value: 19114 - Gap: inf%
+n5m50E: Earliest Ready Time + First Improvement VND - Value: 7767 - Gap: inf%
