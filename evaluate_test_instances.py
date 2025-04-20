@@ -9,7 +9,8 @@ import math # For checking nan/inf
 
 # Import GRASP construction
 from algorithms.greedy import combined_heuristic, grasp_construction
-from algorithms.vnd import vnd_algorithm
+# Import both VND algorithms
+from algorithms.vnd import vnd_algorithm, first_improvement_vnd
 from algorithms.ils import iterated_local_search
 from algorithms.neighborhood import (
     swap_flights, move_flight, swap_flights_between_runways, 
@@ -22,26 +23,14 @@ from utils.metrics import calculate_solution_value, calculate_gap
 # --- Expected Results (Parsed from tests/test_result_expected) ---
 # Format: instance_name: (value, type)
 EXPECTED_RESULTS = {
-  "n3m10A": (7483, "opt"),
-  "n3m10B": (1277, "opt"),
-  "n3m10C": (2088, "opt"),
-  "n3m10D": (322, "opt"),
-  "n3m10E": (3343, "opt"),
-  "n3m20A": (8280, "LB"), # Using the updated value
-  "n3m20B": (1820, "LB"), # Using the updated value
-  "n3m20C": (855, "LB"),
-  "n3m20D": (4357, "opt"),
-  "n3m20E": (3798, "opt"),
-  "n3m40A": (112, "LB"),
-  "n3m40B": (880, "LB"),
-  "n3m40C": (1962, "LB"),
-  "n3m40D": (263, "LB"),
-  "n3m40E": (1192, "LB"),
-  "n5m50A": (0, "LB"),
-  "n5m50B": (0, "LB"),
-  "n5m50C": (0, "LB"),
-  "n5m50D": (0, "LB"),
-  "n5m50E": (0, "LB"),
+    "n3m10A": (7483, "opt"), "n3m10B": (1277, "opt"), "n3m10C": (2088, "opt"),
+    "n3m10D": (322, "opt"), "n3m10E": (3343, "opt"), "n3m20A": (8280, "LB"),
+    "n3m20B": (1820, "LB"), "n3m20C": (855, "LB"), "n3m20D": (4357, "opt"),
+    "n3m20E": (3798, "opt"), "n3m40A": (112, "LB"), "n3m40B": (880, "LB"),
+    "n3m40C": (1962, "LB"), "n3m40D": (263, "LB"), "n3m40E": (1192, "LB"),
+    # Removed n5m50 instances as they have LB=0
+    # "n5m50A": (0, "LB"), "n5m50B": (0, "LB"), "n5m50C": (0, "LB"),
+    # "n5m50D": (0, "LB"), "n5m50E": (0, "LB"),
 }
 
 # --- Algorithm Execution Functions ---
@@ -75,7 +64,8 @@ def run_vnd(instance_data, vnd_iter=1000, vnd_time=5.0):
     exec_time = time.time() - start_time
     return final_penalty, exec_time
 
-def run_ils(instance_data, ils_iter=10, ils_time=30.0, perturb_intensity=7, grasp_alpha=0.3, time_limit_ls=1.5):
+def run_ils(instance_data, ils_iter=20, ils_time=30.0, perturb_intensity=10, 
+            grasp_alpha=0.3, max_neighbors_ls=50, time_limit_ls=1.5):
     """Runs Iterated Local Search (with GRASP start)."""
     rt, pt, wt, p, nr = instance_data
     start_time = time.time()
@@ -93,7 +83,7 @@ def run_ils(instance_data, ils_iter=10, ils_time=30.0, perturb_intensity=7, gras
     best_schedule, final_penalty = iterated_local_search(
         rt, pt, wt, p, nr,
         constructive_heuristic=constructive_func,
-        local_search=vnd_algorithm,
+        local_search=first_improvement_vnd,
         perturbation=shake_solution,
         neighborhoods_for_ls=vnd_neighborhoods,
         max_iterations_ils=ils_iter,
@@ -105,7 +95,8 @@ def run_ils(instance_data, ils_iter=10, ils_time=30.0, perturb_intensity=7, gras
     exec_time = time.time() - start_time
     return final_penalty, exec_time
 
-def run_grasp(instance_data, grasp_iter=10, grasp_alpha=0.3, vnd_iter=1000, vnd_time=5.0):
+def run_grasp(instance_data, grasp_iter=20, grasp_alpha=0.3, 
+              vnd_iter=1000, vnd_time=5.0, max_neighbors_vnd=50):
     """Runs GRASP metaheuristic (Construction + VND, repeated)."""
     rt, pt, wt, p, nr = instance_data
     start_time = time.time()
@@ -123,9 +114,11 @@ def run_grasp(instance_data, grasp_iter=10, grasp_alpha=0.3, vnd_iter=1000, vnd_
         constructed_schedule = grasp_construction(rt, pt, wt, p, nr, alpha=grasp_alpha)
         
         # 2. Local Search (VND)
-        improved_schedule = vnd_algorithm(
+        improved_schedule = first_improvement_vnd(
             constructed_schedule, rt, pt, wt, p, neighborhoods,
-            max_iterations=vnd_iter, time_limit=vnd_time
+            max_iterations=vnd_iter, 
+            time_limit=vnd_time,
+            max_neighbors_per_iter=max_neighbors_vnd # Pass explicitly
         )
         current_penalty = calculate_solution_value(improved_schedule, rt, pt, wt, p)
 
@@ -148,12 +141,20 @@ if __name__ == "__main__":
     instance_files = sorted(glob.glob(instance_pattern))
 
     # --- Algorithm Parameters --- 
-    # Updated parameters
     PARAMS = {
         'Greedy': {'iter': 1},
-        'VND': {'iter': 1, 'vnd_iter': 1000, 'vnd_time': 5.0}, 
-        'ILS': {'iter': 20, 'ils_time': 30.0, 'perturb': 10, 'alpha': 0.3, 'time_limit_ls': 1.5}, 
-        'GRASP': {'iter': 20, 'grasp_alpha': 0.3, 'vnd_iter': 1000, 'vnd_time': 5.0}
+        'VND': {'iter': 1, 'vnd_iter': 1000, 'vnd_time': 2.0}, # Keep basic VND settings
+        'ILS': {'iter': 10,            # Reduced from 20
+                'ils_time': 5.0, 
+                'perturb': 10, 
+                'alpha': 0.3, 
+                'max_neighbors_ls': 15, # Reduced from 50
+                'time_limit_ls': 1.5},
+        'GRASP': {'iter': 10,           # Reduced from 20
+                  'grasp_alpha': 0.5, 
+                  'vnd_iter': 1000, 
+                  'vnd_time': 2.0, 
+                  'max_neighbors_vnd': 10} # Reduced from 50
     }
     ALGORITHMS_TO_RUN = list(PARAMS.keys())
     # --------------------------
@@ -164,25 +165,32 @@ if __name__ == "__main__":
         print(f"No instance files found in {test_dir} matching pattern {instance_pattern}")
     else:
         print(f"Found {len(instance_files)} instances in {test_dir}.")
-        print("Running evaluations for Greedy, VND, ILS, GRASP...")
+        print("Running evaluations (using First Improvement VND for ILS/GRASP)...")
+        print(f"Algorithms: {', '.join(ALGORITHMS_TO_RUN)}")
         print("Parameters:", PARAMS)
-        print("-" * 60)
+        print("=" * 60)
 
         for instance_path in instance_files:
             instance_name = os.path.splitext(os.path.basename(instance_path))[0]
-            print(f"Processing: {instance_name:<10} ... ", end="", flush=True)
             
+            # Skip n5m instances entirely
+            if instance_name.startswith("n5m"):
+                print(f"--- Instance: {instance_name} --- SKIPPED (n5m instance) ---")
+                print("=" * 60)
+                continue # Move to the next instance
+
+            print(f"--- Instance: {instance_name} ---")
+            instance_data = None
             try:
                 with open(instance_path, 'r') as f:
-                  num_flights, num_runways, release_times, processing_times, penalties, waiting_times = parse_input_file(f)
+                    num_flights, num_runways, release_times, processing_times, penalties, waiting_times = parse_input_file(f)
                 instance_data = (release_times, processing_times, waiting_times, penalties, num_runways)
             except Exception as e:
-                print(f"ERROR parsing {instance_name}: {e}")
-                continue # Skip to next instance
-
+                print(f"  ERROR parsing: {e}")
+                print("=" * 60)
+                continue
             ref_value, ref_type = EXPECTED_RESULTS.get(instance_name, (None, None))
-
-            # Run algorithms
+            print(f"  Reference: {ref_value} ({ref_type if ref_type else 'N/A'})")
             instance_run_results = {}
             run_error = False
             for algo_name in ALGORITHMS_TO_RUN:
@@ -193,12 +201,13 @@ if __name__ == "__main__":
                     elif algo_name == 'VND':
                         penalty, ex_time = run_vnd(instance_data, vnd_iter=PARAMS['VND']['vnd_iter'], vnd_time=PARAMS['VND']['vnd_time'])
                     elif algo_name == 'ILS':
-                        penalty, ex_time = run_ils(instance_data, ils_iter=PARAMS['ILS']['iter'], ils_time=PARAMS['ILS']['ils_time'], 
-                                                 perturb_intensity=PARAMS['ILS']['perturb'], grasp_alpha=PARAMS['ILS']['alpha'], 
-                                                 time_limit_ls=PARAMS['ILS']['time_limit_ls'])
+                        penalty, ex_time = run_ils(instance_data, ils_iter=PARAMS['ILS']['iter'], ils_time=PARAMS['ILS']['ils_time'],
+                                                 perturb_intensity=PARAMS['ILS']['perturb'], grasp_alpha=PARAMS['ILS']['alpha'],
+                                                 time_limit_ls=PARAMS['ILS']['time_limit_ls']) # max_neighbors uses default
                     elif algo_name == 'GRASP':
-                        penalty, ex_time = run_grasp(instance_data, grasp_iter=PARAMS['GRASP']['iter'], grasp_alpha=PARAMS['GRASP']['grasp_alpha'], 
-                                                  vnd_iter=PARAMS['GRASP']['vnd_iter'], vnd_time=PARAMS['GRASP']['vnd_time'])
+                        penalty, ex_time = run_grasp(instance_data, grasp_iter=PARAMS['GRASP']['iter'], grasp_alpha=PARAMS['GRASP']['grasp_alpha'],
+                                                  vnd_iter=PARAMS['GRASP']['vnd_iter'], vnd_time=PARAMS['GRASP']['vnd_time'],
+                                                  max_neighbors_vnd=PARAMS['GRASP']['max_neighbors_vnd'])
                     
                     # Calculate GAP
                     gap = float('nan')
@@ -214,7 +223,7 @@ if __name__ == "__main__":
                     })
 
                 except Exception as e:
-                    print(f"ERROR running {algo_name}: {e}")
+                    print(f"  ERROR running {algo_name}: {e}")
                     instance_run_results[algo_name] = {'Penalty': 'ERROR', 'Time': 'ERROR', 'GAP': 'ERROR'}
                     run_error = True
                     # Also add error marker to main list
@@ -253,18 +262,18 @@ if __name__ == "__main__":
         print("Evaluation complete.")
         print("-" * 60)
         
-        # --- Output results as CSV --- 
+        # --- Output results as CSV at the end --- 
         if results_list:
-            print("Final Results (CSV Format):")
+            print("\nFinal Results (CSV Format - Excluding LB=0 Instances):")
             output = io.StringIO()
             fieldnames = ['Instance', 'Algorithm', 'Penalty', 'Time', 'Ref_Value', 'Ref_Type', 'GAP']
             writer = csv.DictWriter(output, fieldnames=fieldnames)
-            
             writer.writeheader()
-            # Filter out rows potentially added just for error markers if needed
-            valid_results = [row for row in results_list if row['Penalty'] is not None or row['Time'] is not None] 
+            # Filter out rows with Ref_Value == 0 and rows added just for error markers
+            valid_results = [row for row in results_list if 
+                             (row['Penalty'] is not None or row['Time'] is not None) and 
+                             (row['Ref_Value'] is None or row['Ref_Value'] != 0)] 
             writer.writerows(valid_results)
-            
             print(output.getvalue())
         else:
             print("No results generated.")
