@@ -1,9 +1,8 @@
 import time
 import copy
-import random
 from typing import List, Callable, Tuple
 
-from algorithms.vnd import vnd_algorithm
+from algorithms.vnd import first_improvement_vnd
 from algorithms.neighborhood import shake_solution
 from utils.metrics import calculate_solution_value
 

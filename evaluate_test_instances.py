@@ -1,14 +1,13 @@
 import time
 import glob
 import os
-import re
 import copy
 import csv
 import io
 import math
 
 from algorithms.greedy import combined_heuristic, grasp_construction
-from algorithms.vnd import vnd_algorithm, first_improvement_vnd
+from algorithms.vnd import first_improvement_vnd
 from algorithms.ils import iterated_local_search
 from algorithms.neighborhood import (
     swap_flights, move_flight, swap_flights_between_runways, 
