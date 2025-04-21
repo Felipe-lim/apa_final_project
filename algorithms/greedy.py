@@ -21,11 +21,6 @@ def combined_heuristic(release_times: List[int], processing_times: List[int],
     runway_times = [0] * num_runways
     last_flight_on_runway = [-1] * num_runways
     
-    waiting_time_lookup = {}
-    for i in range(num_flights):
-        for j in range(num_flights):
-            waiting_time_lookup[(i, j)] = waiting_times[i][j]
-    
     for flight in flight_indices:
         min_cost = float('inf')
         best_runway = 0
@@ -36,8 +31,7 @@ def combined_heuristic(release_times: List[int], processing_times: List[int],
                 possible_start_time = max(runway_times[runway], release_times[flight])
             else:
                 prev_flight = last_flight_on_runway[runway]
-                wait_time = waiting_time_lookup.get((prev_flight, flight), 
-                                               waiting_times[prev_flight][flight])
+                wait_time = waiting_times[prev_flight][flight]
                 possible_start_time = max(
                     runway_times[runway] + wait_time,
                     release_times[flight]

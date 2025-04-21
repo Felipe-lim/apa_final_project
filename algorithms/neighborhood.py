@@ -77,7 +77,6 @@ def move_flight(solution: List[List[int]],
        return None
 
   from_pos = random.randint(0, len(runway) - 1)
-  flight_to_move = runway[from_pos]
 
   to_pos = random.randint(0, len(runway))
 
@@ -336,7 +335,9 @@ def shake_solution(solution: List[List[int]],
     neighborhoods = [
         swap_flights_between_runways,
         reinsert_flight,
-        reinsert_delayed_flight
+        reinsert_delayed_flight,
+        swap_flights,
+        move_flight
     ]
     
     for _ in range(intensity):
@@ -347,7 +348,33 @@ def shake_solution(solution: List[List[int]],
         result = neighborhood_function(
             new_solution, release_times, processing_times, waiting_times, penalties
         )
-        if isinstance(result, list):
-             new_solution = result
+        
+        if result is not None:
+            move_info, delta_penalty = result
+            move_type = move_info["type"]
+            if move_type == "swap":
+                r_idx = move_info["runway_idx"]
+                pos1 = move_info["pos1"]
+                pos2 = move_info["pos2"]
+                new_solution[r_idx][pos1], new_solution[r_idx][pos2] = new_solution[r_idx][pos2], new_solution[r_idx][pos1]
+            elif move_type == "move":
+                r_idx = move_info["runway_idx"]
+                from_pos = move_info["from_pos"]
+                to_pos = move_info["to_pos"]
+                flight = new_solution[r_idx].pop(from_pos)
+                new_solution[r_idx].insert(to_pos, flight)
+            elif move_type == "swap_between":
+                r1_idx = move_info["runway1_idx"]
+                r2_idx = move_info["runway2_idx"]
+                pos1 = move_info["pos1"]
+                pos2 = move_info["pos2"]
+                new_solution[r1_idx][pos1], new_solution[r2_idx][pos2] = new_solution[r2_idx][pos2], new_solution[r1_idx][pos1]
+            elif move_type == "reinsert" or move_type == "reinsert_delayed":
+                s_idx = move_info["source_runway_idx"]
+                t_idx = move_info["target_runway_idx"]
+                s_pos = move_info["source_pos"]
+                t_pos = move_info["target_pos"]
+                flight_to_move = new_solution[s_idx].pop(s_pos)
+                new_solution[t_idx].insert(t_pos, flight_to_move)
 
     return new_solution
