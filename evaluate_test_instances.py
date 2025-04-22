@@ -122,17 +122,17 @@ if __name__ == "__main__":
     'Greedy': {'iter': 1},
     'VND': {'iter': 1, 'vnd_iter': 1000, 'vnd_time': 2, 'max_neighbors_vnd': 25}, 
     'ILS': {'iter': 25,          
-            'ils_time': 3.5,
+            'ils_time': 1.5,
             'perturb': 20,
             'alpha': 0.5, 
             'max_neighbors_ls': 35,
-            'time_limit_ls': 2.5},
-    'GRASP': {'iter': 50,       
+            'time_limit_ls': 1},
+    'GRASP': {'iter': 25,       
               'grasp_alpha': 0.5,
               'vnd_iter': 1000,
-              'vnd_time': 2.0,
+              'vnd_time': 1.0,
               'max_neighbors_vnd': 30,
-              'grasp_time': 2.5}
+              'grasp_time': 2}
   }
   ALGORITHMS_TO_RUN = list(PARAMS.keys())
 
